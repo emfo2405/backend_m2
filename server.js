@@ -25,6 +25,29 @@ if(err) {
 }
 });
 
+//Skapa routes
+app.get("/api", (req, res) => {
+    res.json({message: "Välkommen till mitt API"});
+});
+
+app.get("/api/experience", (req, res) => {
+    //Hämta in information
+    client.query(`SELECT * FROM experience;`, (err, results) => {
+         if(err) {
+        res.status(500).json({error: "Något gick fel: " + err});
+        return;
+         }
+         console.log(results);
+         if(results.length === 0) {
+            res.status(200).json({error: ""});
+         } else {
+            res.json(results);
+         }
+    })
+});
+
+
+
 
 //Starta server
 const port = process.env.PORT || 3000;
@@ -32,5 +55,4 @@ app.listen(port, () => {
     console.log("Startad på: http://localhost: " + port);
 })
 
-//Skapa routes
 
