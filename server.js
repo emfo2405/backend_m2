@@ -46,6 +46,106 @@ app.get("/api/experience", (req, res) => {
     })
 });
 
+app.post("/api/experience", (req, res) => {
+    let companyname = req.body.companyname;
+    let jobtitle = req.body.jobtitle;
+    let location = req.body.location;
+    let startdate = req.body.startdate;
+    let enddate = req.body.enddate;
+    let description = req.body.description;
+
+    //Error-meddelanden
+    let errors = {
+        message: "",
+        detail: "",
+        https_response: {
+
+        }
+    };
+
+    if(!companyname) {
+                //Error meddelamde
+                errors.message = "Companyname tomt";
+                errors.detail = "Du måste fylla i companyname i JSON";
+        
+                //response kod
+                errors.https_response.message = "Bad request";
+                errors.https_response.code = 400;
+        
+                res.status(400).json(errors);
+        
+                return;
+    } else if (!jobtitle) {
+                        //Error meddelamde
+                        errors.message = "Jobtitle tomt";
+                        errors.detail = "Du måste fylla i jobtitle i JSON";
+                
+                        //response kod
+                        errors.https_response.message = "Bad request";
+                        errors.https_response.code = 400;
+                
+                        res.status(400).json(errors);
+                
+                        return;
+    } else if (!location) {
+        //Error meddelamde
+        errors.message = "Location tomt";
+        errors.detail = "Du måste fylla i location i JSON";
+
+        //response kod
+        errors.https_response.message = "Bad request";
+        errors.https_response.code = 400;
+
+        res.status(400).json(errors);
+
+        return;
+} else if (!startdate || !enddate) {
+    //Error meddelamde
+    errors.message = "Startdate eller enddate tomt";
+    errors.detail = "Du måste fylla i både startdate och enddate i JSON";
+
+    //response kod
+    errors.https_response.message = "Bad request";
+    errors.https_response.code = 400;
+
+    res.status(400).json(errors);
+
+    return;
+} else if (!description) {
+    //Error meddelamde
+    errors.message = "Description tomt";
+    errors.detail = "Du måste fylla i description i JSON";
+
+    //response kod
+    errors.https_response.message = "Bad request";
+    errors.https_response.code = 400;
+
+    res.status(400).json(errors);
+
+    return;
+}
+
+//Lägg till information i databas
+client.query(`INSERT INTO experience (companyname, jobtitle, location, startdate, enddate, description) VALUES (?,?);`, [companyname, jobtitle, location, startdate, enddate, description], (err, results) => {
+    if(err) {
+        res.status(500).json({error: "Something went wrong: " + err});
+        return;
+    } else {
+        console.log("Fråga skapad: " + results);
+
+        let experience = {
+            companyname: companyname,
+            jobtitle: jobtitle,
+            location: location,
+            startdate: startdate,
+            enddate: enddate,
+            description: description
+        };
+
+        res.json({message: "Ny arbetslivserfarenhet tillagd", experience});
+    }
+});
+});
 
 
 
