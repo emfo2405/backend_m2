@@ -18,3 +18,13 @@ const connection = mysql.createConnection( {
     database: process.env.DB_DATABASE,
     port: process.env.DB_PORT
 });
+
+//Meddelanden ifall kopplingen inte fungerar eller om kopplingen lyckas
+connection.connect((err) => {
+    if(err) {
+        console.log("Koppling till databasen misslyckades " + err);
+    } else {
+    console.log("Koppling till databasen lyckades")
+    }
+});
+
