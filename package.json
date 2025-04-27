@@ -12,7 +12,7 @@
   "devDependencies": {
     "nodemon": "^3.1.10"
   },
-  "scripts": {
+  "scripts": { 
     "start": "nodemon server.js"
   },
   "keywords": [],
