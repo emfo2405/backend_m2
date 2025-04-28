@@ -63,10 +63,10 @@ app.post("/api/experience", (req, res) => {
         }
     };
 
-    if(!companyname) {
+    if(!companyname || !jobtitle || !location || !startdate || !enddate || !description) {
                 //Error meddelamde
-                errors.message = "Companyname tomt";
-                errors.detail = "Du måste fylla i companyname i JSON";
+                errors.message = "Companyname, jobtitle, location, startdate, enddate och description måste vara ifyllda";
+                errors.detail = "Du måste fylla i companyname, jobtitle, location, startdate, enddate och description i JSON";
         
                 //response kod
                 errors.https_response.message = "Bad request";
@@ -75,55 +75,7 @@ app.post("/api/experience", (req, res) => {
                 res.status(400).json(errors);
         
                 return;
-    } else if (!jobtitle) {
-                        //Error meddelamde
-                        errors.message = "Jobtitle tomt";
-                        errors.detail = "Du måste fylla i jobtitle i JSON";
-                
-                        //response kod
-                        errors.https_response.message = "Bad request";
-                        errors.https_response.code = 400;
-                
-                        res.status(400).json(errors);
-                
-                        return;
-    } else if (!location) {
-        //Error meddelamde
-        errors.message = "Location tomt";
-        errors.detail = "Du måste fylla i location i JSON";
-
-        //response kod
-        errors.https_response.message = "Bad request";
-        errors.https_response.code = 400;
-
-        res.status(400).json(errors);
-
-        return;
-} else if (!startdate || !enddate) {
-    //Error meddelamde
-    errors.message = "Startdate eller enddate tomt";
-    errors.detail = "Du måste fylla i både startdate och enddate i JSON";
-
-    //response kod
-    errors.https_response.message = "Bad request";
-    errors.https_response.code = 400;
-
-    res.status(400).json(errors);
-
-    return;
-} else if (!description) {
-    //Error meddelamde
-    errors.message = "Description tomt";
-    errors.detail = "Du måste fylla i description i JSON";
-
-    //response kod
-    errors.https_response.message = "Bad request";
-    errors.https_response.code = 400;
-
-    res.status(400).json(errors);
-
-    return;
-}
+    }
 
 //Lägg till information i databas
 client.query(`INSERT INTO experience (companyname, jobtitle, location, startdate, enddate, description) VALUES (?,?);`, [companyname, jobtitle, location, startdate, enddate, description], (err, results) => {
@@ -131,7 +83,7 @@ client.query(`INSERT INTO experience (companyname, jobtitle, location, startdate
         res.status(500).json({error: "Something went wrong: " + err});
         return;
     } else {
-        console.log("Fråga skapad: " + results);
+        console.log("Nytt inlägg skapat: " + results);
 
         let experience = {
             companyname: companyname,
@@ -145,6 +97,29 @@ client.query(`INSERT INTO experience (companyname, jobtitle, location, startdate
         res.json({message: "Ny arbetslivserfarenhet tillagd", experience});
     }
 });
+});
+
+app.put("/api/experience/:id", (req, res) => {
+    let id = req.params.id;
+    let { companyname, jobtitle, location, startdate, enddate, description } = req.body;
+
+    if(!companyname || !jobtitle || !location || !startdate || !enddate || !description) {
+        return res.status(400).json({message: "companyname, jobtitle, location, startdate, enddate och description måste vara ifyllda"})
+    } else {
+        client.query(`UPDATE experience SET companyname=?, jobtitle=?, location=?, startdate=?, enddate=?, description=? WHERE id=?`, [companyname, jobtitle, location, startdate, enddate, description], (error, results) => {
+            if(error) {
+                res.status(500).json({message: "Något gick fel, försök igen senare"});
+            } else if (results.affectedRows === 0) {
+                res.status(404).json({message: "Erfarenheten hittades inte"});
+            } else {
+                res.json({message: "Erfarenheten har uppdaterats"})
+            }
+        })
+    }
+});
+
+app.delete("/api/experience/:id", (req,res) => {
+
 });
 
 
