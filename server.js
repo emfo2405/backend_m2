@@ -119,7 +119,16 @@ app.put("/api/experience/:id", (req, res) => {
 });
 
 app.delete("/api/experience/:id", (req,res) => {
-
+id= req.params.id;
+client.query(`DELETE FROM experience WHERE id=?`, [id], (error, results) => {
+    if(error) {
+        res.status(500).json({message: "Något gick fel, försök igen senare"});
+    } else if (results.affectedRows === 0) {
+        res.status(404).json({message: "Erfarenheten hittades inte"});
+    } else {
+        res.json({message: "Erfarenheten har raderats"});
+    }
+});
 });
 
 
