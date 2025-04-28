@@ -39,12 +39,12 @@ app.get("/api/experience", (req, res) => {
         return;
          }
          console.log(results);
-         if(results.length === 0) {
+         if(results.rows.length === 0) {
             res.status(200).json({error: ""});
          } else {
             res.json(results);
          }
-    })
+    });
 });
 
 app.post("/api/experience", (req, res) => {
@@ -79,7 +79,7 @@ app.post("/api/experience", (req, res) => {
     }
 
 //Lägg till information i databas
-client.query(`INSERT INTO experience (companyname, jobtitle, location, startdate, enddate, description) VALUES (?,?);`, [companyname, jobtitle, location, startdate, enddate, description], (err, results) => {
+client.query(`INSERT INTO experience (companyname, jobtitle, location, startdate, enddate, description) VALUES ($1, $2, $3, $4, $5, $6);`, [companyname, jobtitle, location, startdate, enddate, description], (err, results) => {
     if(err) {
         res.status(500).json({error: "Something went wrong: " + err});
         return;
@@ -107,10 +107,10 @@ app.put("/api/experience/:id", (req, res) => {
     if(!companyname || !jobtitle || !location || !startdate || !enddate || !description) {
         return res.status(400).json({message: "companyname, jobtitle, location, startdate, enddate och description måste vara ifyllda"})
     } else {
-        client.query(`UPDATE experience SET companyname=?, jobtitle=?, location=?, startdate=?, enddate=?, description=? WHERE id=?`, [companyname, jobtitle, location, startdate, enddate, description], (error, results) => {
+        client.query(`UPDATE experience SET companyname=$1, jobtitle=$2, location=$3, startdate=$4, enddate=$5, description=$6 WHERE id=$7`, [companyname, jobtitle, location, startdate, enddate, description, id], (error, results) => {
             if(error) {
                 res.status(500).json({message: "Något gick fel, försök igen senare"});
-            } else if (results.affectedRows === 0) {
+            } else if (results.rowCount === 0) {
                 res.status(404).json({message: "Erfarenheten hittades inte"});
             } else {
                 res.json({message: "Erfarenheten har uppdaterats"})
@@ -121,10 +121,10 @@ app.put("/api/experience/:id", (req, res) => {
 
 app.delete("/api/experience/:id", (req,res) => {
 id= req.params.id;
-client.query(`DELETE FROM experience WHERE id=?`, [id], (error, results) => {
+client.query(`DELETE FROM experience WHERE id=$1`, [id], (error, results) => {
     if(error) {
         res.status(500).json({message: "Något gick fel, försök igen senare"});
-    } else if (results.affectedRows === 0) {
+    } else if (results.rowCount === 0) {
         res.status(404).json({message: "Erfarenheten hittades inte"});
     } else {
         res.json({message: "Erfarenheten har raderats"});

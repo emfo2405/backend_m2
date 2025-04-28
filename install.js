@@ -19,9 +19,9 @@ async function install() {
         const sql = `
             CREATE TABLE experience(
             id SERIAL PRIMARY KEY,
-            companyname VARCHAR(25) NOT NULL,
-            jobtitle VARCHAR(20) NOT NULL,
-            location VARCHAR(25) NOT NULL,
+            companyname VARCHAR(40) NOT NULL,
+            jobtitle VARCHAR(40) NOT NULL,
+            location VARCHAR(40) NOT NULL,
             startdate DATE NOT NULL,
             enddate DATE NOT NULL,
             description TEXT NOT NULL);
