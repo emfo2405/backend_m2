@@ -1,7 +1,11 @@
+//Hämtar in postgres och dotenv
 const { Client } = require("pg");
 require("dotenv").config();
 
+//Funktion för att koppla till databas och skapa tabell
 async function install() {
+
+    //Koppling till databas med inställningar från .env-fil
     const client = new Client ({
         host: process.env.DB_HOST,
         user: process.env.DB_USER,
@@ -13,6 +17,7 @@ async function install() {
         }
     });
 
+    //Skapande av tabell i databas
     try {
         await client.connect();
         console.log("Anslutning till databas lyckades");
@@ -29,6 +34,7 @@ async function install() {
         await client.query(sql);
         console.log("Tabell över arbetslivserfarenheter skapade");
             
+        //Fångar upp fel ifall databasen inte kopplas/skapas rätt
     } catch(error) {
         console.error(error);
     } finally {
@@ -36,4 +42,5 @@ async function install() {
     }
 }
 
+//Kör funktionen för att koppla till databasen
 install();
